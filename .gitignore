@@ -1,0 +1,18 @@
+# Exclude everything.
+/*
+
+# Include .gitignore.
+!.gitignore
+
+# Include setup.
+!README.md
+
+# Include only specified.
+!linux_tools
+!gentoo_tools
+!x11_tools
+!vm_tools
+!python_tools
+!lua_tools
+!perl_tools
+!startup_scripts
