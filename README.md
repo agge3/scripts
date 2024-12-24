@@ -7,3 +7,5 @@ if [ -f "$HOME/scripts/tools_aliases.sh" ]; then
 fi
 ```
 3. Add scripts to tools and they'll be sourced in as aliases named after the script. 
+<br>
+Put scripts that you don't want an alias for in `no_alias` of their respective tools directory.
