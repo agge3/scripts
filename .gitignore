@@ -16,3 +16,4 @@
 !lua_tools
 !perl_tools
 !startup_scripts
+!tools_aliases.sh
