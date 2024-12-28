@@ -4,4 +4,5 @@ if [ "$#" -eq 0 ]; then
 	echo "No application to swallow! Call with application as argument."
 fi
 
-./"$1" & disown
+nohup "./$1" &> /dev/null & disown
+exit

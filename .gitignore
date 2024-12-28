@@ -15,5 +15,6 @@
 !python_tools
 !lua_tools
 !perl_tools
+!cpp_tools
 !startup_scripts
 !tools_aliases.sh
