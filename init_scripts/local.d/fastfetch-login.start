@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+# Generate system information with fastfetch.
+logo=/home/agge/.config/fastfetch/agetty-gentoo-logo.asc
+cfg=/home/agge/.config/fastfetch/login.jsonc
+fastfetch -c "$cfg" > /etc/issue
+
+# Append the welcome message.
+cat <<'EOF' >> /etc/issue
+    .~.     \e{cyan}██     ██ ███████ ██       ██████  ██████  ███    ███ ███████\e{reset}
+    /\e{yellow}V\e{reset}\\     \e{cyan}██     ██ ██      ██      ██      ██    ██ ████  ████ ██    \e{reset}  
+   // \\\\   \e{cyan} ██  █  ██ █████   ██      ██      ██    ██ ██ ████ ██ █████\e{reset}
+  /(   )\\   \e{cyan}██ ███ ██ ██      ██      ██      ██    ██ ██  ██  ██ ██    \e{reset}
+   \e{yellow}^\e{reset}`~'\e{yellow}^\e{reset}     \e{cyan}███ ███  ███████ ███████  ██████  ██████  ██      ██ ███████\e{reset}
+
+This is \n (\s \m \r) \t
+EOF
+
+# sed agetty color codes where they should be.
+green=(
+	"OS"
+	"Kernel"
+	"Board"
+	"Bios (UEFI)"
+	"CPU"
+	"CPU Cache (L1)"
+	"CPU Cache (L2)"
+	"CPU Cache (L3)"
+	"Memory"
+	"GPU"
+	"Display (DisplayPort-2)"
+	"Display (DisplayPort-0)"
+	"Display (HDMI-A-0)"
+	"Disk (/)"
+	"Disk (/mnt/ntfs)"
+	"Swap"
+)
+
+for pattern in "${green[@]}"; do
+    sed -i "s|$pattern|\\\e{green}$pattern\\\e{reset}|g" /etc/issue
+done
+
+sed -E -i '4,19{
+	# Capture and replace the first two non-whitespace characters (preserving whitespace).
+	s|^([[:space:]]*)(\S{2})|\1\\\e{magenta}\2\\\e{reset}|
+
+	# Capture and replace the last two non-whitespace characters (preserving whitespace).
+	s|(.*)(\S{2})$|\1\\\e{magenta}\2\\\e{reset}|
+}' /etc/issue
+
+sed -i '{
+	# Capture and replace the first line of the logo.
+	s|-/oyddmdhs+:.|\\\e{magenta}-/oyddmdhs+:.\\\e{reset}|
+
+	# Capture and replace the last line of the logo.
+	s|`-//////:--.|\\\e{magenta}`-//////:--.\\\e{reset}|
+
+	# Capture and replace the Gentoo eye.
+	s|hhyyyo|\\\e{magenta}hhyyyo\\\e{reset}|
+	s|hs++so/s|\\\e{magenta}hs++so/s\\\e{reset}|
+	s|dyooy|\\\e{magenta}`dyooy\\\e{reset}|
+}' /etc/issue

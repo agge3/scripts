@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# Systemd containers on an OpenRC host, https://wiki.gentoo.org/wiki/LXC.
+# xxx local or openrc init script?
+
+mkdir -p /sys/fs/cgroup/systemd
+mount -t cgroup -o none,name=systemd systemd /sys/fs/cgroup/systemd
+chmod 777 /sys/fs/cgroup/systemd
