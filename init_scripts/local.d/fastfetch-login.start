@@ -17,46 +17,57 @@ This is \n (\s \m \r) \t
 EOF
 
 # sed agetty color codes where they should be.
-green=(
+lightgreen=(
 	"OS"
 	"Kernel"
 	"Board"
 	"Bios (UEFI)"
-	"CPU"
-	"CPU Cache (L1)"
-	"CPU Cache (L2)"
-	"CPU Cache (L3)"
+	"CPU[^:]*"
+	#"CPU Cache (L1)"
+	#"CPU Cache (L2)"
+	#"CPU Cache (L3)"
 	"Memory"
 	"GPU"
-	"Display (DisplayPort-2)"
-	"Display (DisplayPort-0)"
-	"Display (HDMI-A-0)"
+	"Display (DELL U2419HC)"
+	"Display (LG ULTRAGEAR)"
+	"Display (ASUS VN247)"
 	"Disk (/)"
 	"Disk (/mnt/ntfs)"
 	"Swap"
 )
 
-for pattern in "${green[@]}"; do
-    sed -i "s|$pattern|\\\e{green}$pattern\\\e{reset}|g" /etc/issue
+#sed -i '{
+#	s|CPU Cache (L1)|\\\e{green}CPU Cache (L1)\\\e{reset}|
+#	s|CPU Cache (L2)|\\\e{green}CPU Cache (L2)\\\e{reset}|
+#	s|CPU Cache (L3)|\\\e{green}CPU Cache (L3)\\\e{reset}|
+#}' /etc/issue
+
+for pattern in "${lightgreen[@]}"; do
+    sed -i "s|$pattern|\\\e{lightgreen}&\\\e{reset}|g" /etc/issue
 done
+
+# xxx cpu cache is not being captured correctly. just specifically capture the lines it's on, up to the `:`
+#sed -i '28,30{
+#	s|^.*:|\\\e{green}\1\\\{reset}|g
+#}' /etc/issue
 
 sed -E -i '4,19{
 	# Capture and replace the first two non-whitespace characters (preserving whitespace).
-	s|^([[:space:]]*)(\S{2})|\1\\\e{magenta}\2\\\e{reset}|
+	s|^([[:space:]]*)(\S{2})|\1\\\e{lightmagenta}\2\\\e{reset}|
 
 	# Capture and replace the last two non-whitespace characters (preserving whitespace).
-	s|(.*)(\S{2})$|\1\\\e{magenta}\2\\\e{reset}|
+	s|(.*)(\S{2})$|\1\\\e{lightmagenta}\2\\\e{reset}|
 }' /etc/issue
 
 sed -i '{
 	# Capture and replace the first line of the logo.
-	s|-/oyddmdhs+:.|\\\e{magenta}-/oyddmdhs+:.\\\e{reset}|
+	s|-/oyddmdhs+:.|\\\e{lightmagenta}-/oyddmdhs+:.\\\e{reset}|
 
 	# Capture and replace the last line of the logo.
-	s|`-//////:--.|\\\e{magenta}`-//////:--.\\\e{reset}|
+	s|`-//////:--.|\\\e{lightmagenta}`-//////:--.\\\e{reset}|
 
 	# Capture and replace the Gentoo eye.
-	s|hhyyyo|\\\e{magenta}hhyyyo\\\e{reset}|
-	s|hs++so/s|\\\e{magenta}hs++so/s\\\e{reset}|
-	s|dyooy|\\\e{magenta}`dyooy\\\e{reset}|
+	s|hhyyyo|\\\e{lightmagenta}hhyyyo\\\e{reset}|
+	s|hs++so/s|\\\e{lightmagenta}hs++so/s\\\e{reset}|
+	s|dyooy|\\\e{lightmagenta}`dyooy\\\e{reset}|
 }' /etc/issue

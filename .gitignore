@@ -19,3 +19,5 @@
 !startup_scripts
 !tools_aliases.sh
 !init_scripts
+!bin
+!macos_scripts
