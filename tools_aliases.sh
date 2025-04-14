@@ -4,7 +4,13 @@
 linux_tools="$HOME/scripts/linux_tools"
 for script in "$linux_tools"/*.sh; do
 	alias_name=$(basename "$script" .sh)
-	alias "$alias_name"="$script"
+	if [[ "$alias_name" == "kill-last-suspended" ]]; then
+		kp() {
+			source "$script"
+		}
+	else
+		alias "$alias_name"="$script"
+	fi
 done
 
 # Auto-populate aliases for gentoo_tools scripts.
