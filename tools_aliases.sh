@@ -6,7 +6,7 @@ for script in "$linux_tools"/*.sh; do
 	alias_name=$(basename "$script" .sh)
 	if [[ "$alias_name" == "kill-last-suspended" ]]; then
 		kp() {
-			source "$script"
+			source "$HOME/scripts/linux_tools/kill-last-suspended.sh"
 		}
 	else
 		alias "$alias_name"="$script"
@@ -51,6 +51,13 @@ done
 # Auto-populate aliases for perl_tools scripts.
 perl_tools="$HOME/scripts/perl_tools"
 for script in "$perl_tools"/*.sh; do
+	alias_name=$(basename "$script" .sh)
+	alias "$alias_name"="$script"
+done
+
+# Auto-populate aliases for macos_tools scripts.
+macos_tools="$HOME/scripts/macos_tools"
+for script in "$macos_tools"/*.sh; do
 	alias_name=$(basename "$script" .sh)
 	alias "$alias_name"="$script"
 done

@@ -7,6 +7,9 @@
 # Include setup.
 !README.md
 
+# Exclude macOS specific files.
+*/.DS_STORE
+
 # Include only specified.
 !linux_tools
 !gentoo_tools
