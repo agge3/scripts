@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 
 # Auto-populate aliases for linux_tools scripts.
+# xxx check if linux
 linux_tools="$HOME/scripts/linux_tools"
 for script in "$linux_tools"/*.sh; do
 	alias_name=$(basename "$script" .sh)
 	alias "$alias_name"="$script"
 done
 
+# xxx check if macos
+#macos_tools
+
 # Auto-populate aliases for gentoo_tools scripts.
+# xxx check if gentoo
 gentoo_tools="$HOME/scripts/gentoo_tools"
 for script in "$gentoo_tools"/*.sh; do
 	alias_name=$(basename "$script" .sh)
@@ -15,6 +20,7 @@ for script in "$gentoo_tools"/*.sh; do
 done
 
 # Auto-populate aliases for x11_tools scripts.
+# xxx check if x11
 x11_tools="$HOME/scripts/x11_tools"
 for script in "$x11_tools"/*.sh; do
 	alias_name=$(basename "$script" .sh)
@@ -45,6 +51,12 @@ done
 # Auto-populate aliases for perl_tools scripts.
 perl_tools="$HOME/scripts/perl_tools"
 for script in "$perl_tools"/*.sh; do
+	alias_name=$(basename "$script" .sh)
+	alias "$alias_name"="$script"
+done
+
+git_tools="$HOME/scripts/git_tools"
+for script in "$git_tools"/*.sh; do
 	alias_name=$(basename "$script" .sh)
 	alias "$alias_name"="$script"
 done

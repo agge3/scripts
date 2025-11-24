@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+#set -eoux pipefile
+
+home="/Users/agge"
+
+# Must be ran with superuser privileges.
+if [[ $EUID -ne 0 ]]; then
+	echo "$(basename "$0"): Must be ran with superuser privileges"
+	exit 1
+fi
+
+ret=0
+
+brew update
+brew upgrade
+brew cleanup
+
+# Other unprivledged updates
+# xxx guard if have flatpak or not
+sudo -u agge flatpak update -y
+sudo -u agge nvim --headless "+Lazy! sync" +qa # update nvim headless
+
+
+# update /opt
+# xxx sort out patchs for opt correctly on macos
+sudo -u agge /usr/bin/env bash "$home/scripts/update/update-runelite.sh"
