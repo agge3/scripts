@@ -2,4 +2,4 @@
 
 # xxx configure install for profile scripts
 
-PATH="$PATH:/usr/local/NX/bin"
+export PATH="$PATH:/usr/local/NX/bin"
