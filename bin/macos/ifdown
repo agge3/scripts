@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# networksetup -listallhardwareports
+
+WIFI_IF="en0"
+HOTSPOT_SSID="iPhone"
+HOTSPOT_PASSWORD=""	# keep saved
+
+echo "Disabling Ethernet interface: $WIFI_IF..."
+sudo ifconfig en0 down

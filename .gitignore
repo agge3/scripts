@@ -21,3 +21,6 @@
 !init_scripts
 !bin
 !macos_tools
+!qemu_scripts
+
+**/.DS_store

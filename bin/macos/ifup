@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# networksetup -listallhardwareports
+
+WIFI_IF="en0"
+NETWORK_SSID="iPhone"
+NETWORK_PASSWORD=""	# keep saved
+
+echo "Enabling Ethernet interface: $WIFI_IF..."
+sudo ifconfig "$WIFI_IF" up
+
+# xxx this is being tricky, because macOS needs to initialize the iPhone to
+# start its wifi hotspot. revisit
+echo "Connecting to Wi-Fi network: $NETWORK_SSID..."
