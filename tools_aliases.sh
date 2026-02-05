@@ -30,6 +30,7 @@ DIR_TO_ALIAS=(
 
 	"$HOME/scripts/git_tools"
 	"$HOME/scripts/wm_tools"
+	"$HOME/scripts/tools"
 )
 
 for dir in "${DIR_TO_ALIAS[@]}"; do
