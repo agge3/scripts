@@ -36,7 +36,7 @@ perl-cleaner --all # clean perl modules
 
 # Other unprivledged updates
 sudo -u agge flatpak update -y
-sudo -u agge nvim --headless "+Lazy! sync" +qa # update nvim headless
+#sudo -u agge nvim --headless "+Lazy! sync" +qa # update nvim headless
 # xxx update mason lsp
 
 #haskell-update # TODO: not working

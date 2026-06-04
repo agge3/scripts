@@ -1,21 +1,63 @@
 #!/usr/bin/env bash
 
-set -eoux pipefail
+set -eou pipefail
 
+# dep check:
 GRADLE_BIN=$(command -v gradle)
 if [[ -z "$GRADLE_BIN" ]]; then
 	echo "ERROR: gradle not found" >&2
 	exit 1
 fi
 
-JDK_RELEASE="openjdk-bin-11"
+DISTRO=$(sed -n '/^NAME=/p' /etc/os-release | cut -d= -f2 | tr -d '"')
 
-# set jvm version
-DISTRO=$(sed 's/NAME=.*/p' /etc/os-release | cut -d= -f2)
-if [[ "$DISTRO" == "Gentoo" ]]; then
-	NUM=$(eselect java-vm list | grep "$JDK_RELEASE" | sed 's/.*\[\([0-9]*\)\].*/\1/')
-	eselect java-vm set "$NUM"
-fi
+BIN_PATH="$HOME/.local/bin"
+
+RL_PATH="$HOME/.local/opt/RuneLite"
+RL_REPO="$RL_REPO/runelite"
+
+# accounts to add to bin path
+ACCOUNTS=(
+	"agge_kun"
+	"ironbsd"
+)
+
+GRADLE_WRAPPER="gradlew"
+TARGET_JDK="openjdk-bin-11"
+
+jdk_num() {
+	if [[ $# -ne 1 || -z "$1" ]]; then
+		return 1
+	fi
+	eselect java-vm list | grep "$1" | sed 's/.*\[\([0-9]*\)\].*/\1/'
+}
+
+# PRE: DISTRO is set
+init() {
+	if [[ "$DISTRO" == "Gentoo" ]]; then
+		# set jvm version
+		# tr because *sometimes* /etc/os-release has quotes around NAME
+		PREV_JDK=$(eselect java-vm show | grep -A1 'user-vm' | tail -1 | tr -d ' ')
+		PREV_NUM=$(jdk_num "$PREV_JDK")
+		TARGET_NUM=$(jdk_num "$TARGET_JDK")
+		if [[ -z "$PREV_NUM" || -z "$TARGET_NUM" ]]; then
+			echo "FATAL: failed to get java-vm select numbers"
+			exit 1
+		fi
+		eselect java-vm set user "$TARGET_NUM"
+	fi
+
+	echo "SUCCESS: init for DISTRO: $DISTRO"
+}
+
+# PRE: DISTRO is set
+# PRE: DISTRO init was SUCCESS
+cleanup() {
+	if [[ "$DISTRO" == "Gentoo" ]]; then
+		eselect java-vm set user "$PREV_NUM"
+	fi
+	echo "SUCCESS: cleanup for DISTRO: $DISTRO"
+}
 
 sed_inplace() {
 	if [[ $(uname) == "Linux" ]]; then
@@ -25,7 +67,15 @@ sed_inplace() {
 	fi
 }
 
-RL_REPO="$HOME/.local/opt/RuneLite/runelite"
+# main entry:
+# xxx also handle other preconditions
+if [[ ! -d "$BIN_PATH" ]]; then
+	mkdir -pv "$BIN_PATH"
+fi
+
+init
+
+trap 'cleanup' EXIT TERM INT QUIT
 
 pushd "$RL_REPO" || exit
 echo "DEBUG: cwd: $(pwd)"
@@ -58,6 +108,9 @@ if [[ -z "$VERSION" ]]; then
 	exit 1
 fi
 
+# use version to reference the built target
+RL_JAR_PATTERN="client-$VERSION-shaded.jar"
+
 git checkout "$LATEST_TAG" || true
 
 # has broken plugin hub in the past (on master HEAD) - haven't tested on tags,
@@ -65,17 +118,21 @@ git checkout "$LATEST_TAG" || true
 sed_inplace "s/\${project.version}/$VERSION/" \
 	runelite-client/src/main/resources/net/runelite/client/runelite.properties
 
-"$GRADLE_BIN" clean buildAll -x test
+./"$GRADLE_WRAPPER" clean
+./"$GRADLE_WRAPPER" buildAll -x test
 
 popd # root
 
-# distribute built runelite in release
-# use version to reference the built target
-RL_JAR_PATTERN="client-$VERSION-shaded.jar"
-
-# update root build.gradle to reflect newest runelite version
-sed_inplace "s/def runeLiteVersion.*/def runeLiteVersion = '$VERSION'/" \
-	build.gradle
+# add runelite script with account postfix to bin path
+for account in "${ACCOUNTS[@]}"; do
+	ln -s "$RL_PATH/$account/runelite.sh" "$BIN_PATH/runelite-$account"
+	ret=$?
+	if [[ $ret -ne 0 ]]; then
+		"ERROR: ln failed for account: $account. RET: $ret"
+		# xxx should we exit, or let continue? since this is last output, it's
+		# not clobbered easily, so we'll just continue
+	fi
+done
 
 echo "DONE" 2>&1
 exit 0
